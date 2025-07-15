@@ -53,7 +53,7 @@ public isolated class StoreListener {
     public isolated function init(Store messageStore, *StoreListenerConfiguration config) returns Error? {
         self.messageStore = messageStore;
         if config.maxRetries < 0 {
-            return error Error("maxRetries cannot be negative");
+            return error Error("maxRetries must be greater than or equal to zero");
         }
         if config.pollingInterval <= 0d {
             return error Error("pollingInterval must be greater than zero");
@@ -96,6 +96,7 @@ public isolated class StoreListener {
                 if stopResult is Error {
                     return error Error("failed to detach the service", cause = stopResult);
                 }
+                self.pollJobId = ();
             }
 
             StoreService? currentService = self.messageStoreService;
@@ -153,6 +154,7 @@ public isolated class StoreListener {
             if stopResult is error {
                 return error Error("failed to stop message store listener", cause = stopResult);
             }
+            self.pollJobId = ();
         }
     }
 
