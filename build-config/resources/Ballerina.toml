@@ -1,0 +1,9 @@
+[package]
+org = "ballerina"
+name = "messaging"
+version = "@toml.version@"
+authors = ["Ballerina"]
+keywords = ["message", "store", "processor", "listener", "guaranteed", "delivery"]
+repository = "https://github.com/ballerina-platform/module-ballerina-messaging"
+license = ["Apache-2.0"]
+distribution = "2201.12.7"
