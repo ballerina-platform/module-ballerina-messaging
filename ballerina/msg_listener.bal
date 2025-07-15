@@ -125,6 +125,7 @@ public isolated class StoreListener {
             if pollJob is error {
                 return error Error("failed to start message store listener", cause = pollJob);
             }
+            self.pollJobId = pollJob;
         }
     }
 

@@ -66,10 +66,10 @@ function testMessageStoreListener1() returns error? {
 
 function testMessagesInDLS(InMemoryMessageStore deadLetterStore, anydata[] expectedMessages) {
     foreach anydata message in expectedMessages {
-        Message? failuedMsg = deadLetterStore->retrieve();
-        if failuedMsg is () {
+        Message? failedMsg = deadLetterStore->retrieve();
+        if failedMsg is () {
             test:assertFail("Expected a message in the dead letter store, but found none");
         }
-        test:assertEquals(failuedMsg.content, message);
+        test:assertEquals(failedMsg.content, message);
     }
 }

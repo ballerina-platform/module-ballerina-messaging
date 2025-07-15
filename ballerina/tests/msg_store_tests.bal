@@ -1,7 +1,7 @@
 import ballerina/test;
 
 @test:Config
-function testInMemoryMessageStoreRetrival() {
+function testInMemoryMessageStoreRetrieval() {
     InMemoryMessageStore store = new;
     Message? message = store->retrieve();
     test:assertEquals(message, (), "Expected no message in empty store");
@@ -70,7 +70,7 @@ function testInMemoryMessageStoreAcknowledgmentWithInvalidId() {
 }
 
 @test:Config
-function testInMemoryMessageStoreRetrivalsWithoutAck() {
+function testInMemoryMessageStoreRetrievalsWithoutAck() {
     InMemoryMessageStore store = new;
     store->store("testMessage1");
     store->store("testMessage2");
@@ -92,7 +92,7 @@ function testInMemoryMessageStoreRetrivalsWithoutAck() {
 }
 
 @test:Config
-function testInMemoryMessageStoreRetrivalsWithDelayedSuccessAck() {
+function testInMemoryMessageStoreRetrievalsWithDelayedSuccessAck() {
     InMemoryMessageStore store = new;
     store->store("testMessage");
 
@@ -116,7 +116,7 @@ function testInMemoryMessageStoreRetrivalsWithDelayedSuccessAck() {
 }
 
 @test:Config
-function testInMemoryMessageStoreRetrivalsWithDelayedFailureAck() {
+function testInMemoryMessageStoreRetrievalsWithDelayedFailureAck() {
     InMemoryMessageStore store = new;
     store->store("testMessage");
 

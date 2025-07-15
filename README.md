@@ -85,7 +85,7 @@ public type StoreListenerConfiguration record {|
 
 ## Message Store Service
 
-A message store service, defined by the `messaging:Service` type, can be attached to a `messaging:Listener` to
+A message store service, defined by the `messaging:StoreService` type, can be attached to a `messaging:Listener` to
 process messages retrieved from the message store. This service exposes a single remote method, `onMessage`, which is
 invoked when a new message is received.
 
