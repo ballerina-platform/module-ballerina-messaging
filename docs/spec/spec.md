@@ -60,7 +60,7 @@ The `Store` interface is the core abstraction for message persistence. It define
 ```ballerina
 type Message record {|
     readonly string id;
-    anydata content;
+    anydata payload;
 |};
 ```
 
@@ -128,7 +128,7 @@ listener messaging:StoreListener msgStoreListener = new(msgStore, {
 });
 
 service on msgStoreListener {
-    isolated remote function onMessage(anydata content) returns error? {
+    isolated remote function onMessage(anydata payload) returns error? {
         // Process the message
     }
 }

@@ -14,12 +14,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# This service object defines the contract for processing messages from a message store.
-public type StoreService distinct isolated service object {
+import ballerina/messaging;
 
-    # This function is called when a new message is received from the message store.
-    #
-    # + payload - The message payload to be processed
-    # + return - An error if the message could not be processed, or a nil value
-    isolated remote function onMessage(anydata payload) returns error?;
-};
+// Main message store for incoming order requests
+// In a real-world scenario, this would be a persistent store (e.g., RabbitMQ, Kafka, etc.)
+final messaging:Store orderMessageStore = new messaging:InMemoryMessageStore();
+
+// Dead Letter Queue(DLQ) store for messages that consistently fail processing
+// In a real-world scenario, this would be a persistent store (e.g., RabbitMQ, Kafka, etc.)
+final messaging:Store deadLetterStore = new messaging:InMemoryMessageStore();

@@ -14,12 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# This service object defines the contract for processing messages from a message store.
-public type StoreService distinct isolated service object {
-
-    # This function is called when a new message is received from the message store.
-    #
-    # + payload - The message payload to be processed
-    # + return - An error if the message could not be processed, or a nil value
-    isolated remote function onMessage(anydata payload) returns error?;
-};
+// The Order record type represents the structure of an order message
+public type Order record {|
+    string orderId;
+    string customerName;
+    decimal amount;
+|};

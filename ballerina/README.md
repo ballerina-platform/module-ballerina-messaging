@@ -13,12 +13,12 @@ The `MessageStore` interface defines the fundamental contract for message persis
 of this interface allow Ballerina applications to interact with different message storage systems in a uniform manner.
 
 ```ballerina
-# Represents the message content with a unique consumer ID.
+# Represents the message payload with a unique consumer ID.
 public type Message record {|
     # The unique identifier for the message
     string id;
-    # The actual message content
-    anydata content;
+    # The message payload
+    anydata payload;
 |};
 
 # Represents a message store interface for storing and retrieving messages.
@@ -26,9 +26,9 @@ public type MessageStore isolated client object {
 
     # Stores a message in the message store.
     #
-    # + message - The message to be stored
+    # + payload - The message payload to be stored
     # + return - An error if the message could not be stored, or `()`
-    isolated remote function store(anydata message) returns error?;
+    isolated remote function store(anydata payload) returns error?;
 
     # Retrieves the top message from the message store without removing it.
     #
@@ -55,7 +55,7 @@ To initialize a listener, provide an instance of a `MessageStore`:
 
 ```ballerina
 // Example using an in-memory store
-messaging:MessageStore msgStore = new messaging:InMemoryMessageStore();
+messaging:Store msgStore = new messaging:InMemoryMessageStore();
 
 listener messaging:StoreListener msgStoreListener = new(msgStore);
 ```
@@ -93,9 +93,9 @@ public type Service distinct isolated service object {
 
     # This remote function is called when a new message is received from the message store.
     #
-    # + content - The message content to be processed
+    # + payload - The message payload to be processed
     # + return - An error if the message could not be processed, or a nil value
-    isolated remote function onMessage(anydata content) returns error?;
+    isolated remote function onMessage(anydata payload) returns error?;
 };
 ```
 
@@ -114,7 +114,7 @@ import ballerina/io;
 import ballerina/messaging;
 
 // Initialize an in-memory message store
-messaging:MessageStore msgStore = new messaging:InMemoryMessageStore();
+messaging:Store msgStore = new messaging:InMemoryMessageStore();
 
 // Initialize a message store listener with custom configuration
 listener messaging:Listener msgStoreListener = new(msgStore, {
@@ -126,12 +126,12 @@ listener messaging:Listener msgStoreListener = new(msgStore, {
 // Define and attach a service to the listener to handle incoming messages
 service on msgStoreListener {
 
-    isolated remote function onMessage(anydata content) returns error? {
-        io:println("Received message: ", content);
+    isolated remote function onMessage(anydata payload) returns error? {
+        io:println("Received message payload: ", payload);
 
-        // Simulate a processing failure for specific message content
-        if content is string && content == "fail" {
-            return error("Message processing failed due to 'fail' content");
+        // Simulate a processing failure for specific message payload
+        if payload is string && payload == "fail" {
+            return error("Message processing failed due to 'fail' payload");
         }
         // If no error is returned, the message is acknowledged as successfully processed
     }
@@ -141,8 +141,8 @@ service on msgStoreListener {
 service /api/v1 on new http:Listener(8080) {
 
     // Endpoint to send messages to the message store
-    resource function post messages(@http:Payload anydata content) returns http:Accepted|error {
-        check msgStore.store(content);
+    resource function post messages(@http:Payload anydata payload) returns http:Accepted|error {
+        check msgStore.store(payload);
         return http:ACCEPTED;
     }
 }

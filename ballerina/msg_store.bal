@@ -14,12 +14,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Represents the message content with a unique consumer ID.
+# Represents the message payload with a unique consumer ID.
 public type Message record {|
     # The unique identifier used by the consumer to acknowledge the message
     readonly string id;
-    # The actual message content
-    anydata content;
+    # The message payload
+    anydata payload;
 |};
 
 # Represents a message store interface for storing and retrieving messages.
@@ -27,9 +27,9 @@ public type Store isolated client object {
 
     # Stores a message in the message store.
     #
-    # + message - The message to be stored
+    # + payload - The message payload to store
     # + return - An error if the message could not be stored, or `()`
-    isolated remote function store(anydata message) returns error?;
+    isolated remote function store(anydata payload) returns error?;
 
     # Retrieves the top message from the message store without removing it.
     #

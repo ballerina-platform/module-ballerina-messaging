@@ -16,7 +16,9 @@
 
 import ballerina/test;
 
-@test:Config
+@test:Config {
+    groups: ["inmemoryStoreTests"]
+}
 function testInMemoryMessageStoreRetrieval() {
     InMemoryMessageStore store = new;
     Message? message = store->retrieve();
@@ -27,10 +29,12 @@ function testInMemoryMessageStoreRetrieval() {
     if message is () {
         test:assertFail("Expected a message to be retrieved from the store");
     }
-    test:assertEquals(message.content, "testMessage");
+    test:assertEquals(message.payload, "testMessage");
 }
 
-@test:Config
+@test:Config {
+    groups: ["inmemoryStoreTests"]
+}
 function testInMemoryMessageStoreAcknowledgmentWithSuccess() {
     InMemoryMessageStore store = new;
     store->store("testMessage");
@@ -39,7 +43,7 @@ function testInMemoryMessageStoreAcknowledgmentWithSuccess() {
     if message is () {
         test:assertFail("Expected a message to be retrieved from the store");
     }
-    test:assertEquals(message.content, "testMessage");
+    test:assertEquals(message.payload, "testMessage");
 
     error? ackResult = store->acknowledge(message.id, true);
     if ackResult is error {
@@ -50,7 +54,9 @@ function testInMemoryMessageStoreAcknowledgmentWithSuccess() {
     test:assertEquals(retrievedMessage, ());
 }
 
-@test:Config
+@test:Config {
+    groups: ["inmemoryStoreTests"]
+}
 function testInMemoryMessageStoreAcknowledgmentWithFailure() {
     InMemoryMessageStore store = new;
     store->store("testMessage");
@@ -59,7 +65,7 @@ function testInMemoryMessageStoreAcknowledgmentWithFailure() {
     if message is () {
         test:assertFail("Expected a message to be retrieved from the store");
     }
-    test:assertEquals(message.content, "testMessage");
+    test:assertEquals(message.payload, "testMessage");
 
     error? ackResult = store->acknowledge(message.id, false);
     if ackResult is error {
@@ -70,10 +76,12 @@ function testInMemoryMessageStoreAcknowledgmentWithFailure() {
     if retrievedMessage is () {
         test:assertFail("Expected a message to be retrievable after failed acknowledgment");
     }
-    test:assertEquals(retrievedMessage.content, "testMessage");
+    test:assertEquals(retrievedMessage.payload, "testMessage");
 }
 
-@test:Config
+@test:Config {
+    groups: ["inmemoryStoreTests"]
+}
 function testInMemoryMessageStoreAcknowledgmentWithInvalidId() {
     InMemoryMessageStore store = new;
 
@@ -85,7 +93,9 @@ function testInMemoryMessageStoreAcknowledgmentWithInvalidId() {
     test:assertEquals(ackResult.message(), "Message with the given ID not found or not in flight");
 }
 
-@test:Config
+@test:Config {
+    groups: ["inmemoryStoreTests"]
+}
 function testInMemoryMessageStoreRetrievalsWithoutAck() {
     InMemoryMessageStore store = new;
     store->store("testMessage1");
@@ -95,19 +105,21 @@ function testInMemoryMessageStoreRetrievalsWithoutAck() {
     if message is () {
         test:assertFail("Expected a message to be retrieved from the store");
     }
-    test:assertEquals(message.content, "testMessage1");
+    test:assertEquals(message.payload, "testMessage1");
 
     message = store->retrieve();
     if message is () {
         test:assertFail("Expected a second message to be retrieved from the store");
     }
-    test:assertEquals(message.content, "testMessage2");
+    test:assertEquals(message.payload, "testMessage2");
 
     message = store->retrieve();
     test:assertEquals(message, ());
 }
 
-@test:Config
+@test:Config {
+    groups: ["inmemoryStoreTests"]
+}
 function testInMemoryMessageStoreRetrievalsWithDelayedSuccessAck() {
     InMemoryMessageStore store = new;
     store->store("testMessage");
@@ -116,7 +128,7 @@ function testInMemoryMessageStoreRetrievalsWithDelayedSuccessAck() {
     if message is () {
         test:assertFail("Expected a message to be retrieved from the store");
     }
-    test:assertEquals(message.content, "testMessage");
+    test:assertEquals(message.payload, "testMessage");
     string id = message.id;
 
     message = store->retrieve();
@@ -131,7 +143,9 @@ function testInMemoryMessageStoreRetrievalsWithDelayedSuccessAck() {
     test:assertEquals(message, ());
 }
 
-@test:Config
+@test:Config {
+    groups: ["inmemoryStoreTests"]
+}
 function testInMemoryMessageStoreRetrievalsWithDelayedFailureAck() {
     InMemoryMessageStore store = new;
     store->store("testMessage");
@@ -140,7 +154,7 @@ function testInMemoryMessageStoreRetrievalsWithDelayedFailureAck() {
     if message is () {
         test:assertFail("Expected a message to be retrieved from the store");
     }
-    test:assertEquals(message.content, "testMessage");
+    test:assertEquals(message.payload, "testMessage");
     string id = message.id;
 
     message = store->retrieve();
@@ -155,5 +169,5 @@ function testInMemoryMessageStoreRetrievalsWithDelayedFailureAck() {
     if message is () {
         test:assertFail("Expected a message to be retrievable after failed acknowledgment");
     }
-    test:assertEquals(message.content, "testMessage");
+    test:assertEquals(message.payload, "testMessage");
 }

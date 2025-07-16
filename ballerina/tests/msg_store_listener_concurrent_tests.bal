@@ -32,8 +32,8 @@ listener StoreListener storeListener2 = new (
 
 service on storeListener2 {
 
-    isolated remote function onMessage(anydata message) returns error? {
-        User user = check message.toJson().fromJsonWithType();
+    isolated remote function onMessage(anydata payload) returns error? {
+        User user = check payload.toJson().fromJsonWithType();
         if user.age < 30 {
             runtime:sleep(20);
         }
@@ -44,12 +44,14 @@ service on storeListener2 {
 }
 
 function addMessagesToStore2() returns error? {
-    foreach anydata message in messages {
-        store2->store(message);
+    foreach anydata payload in messagePayloads {
+        store2->store(payload);
     }
 }
 
-@test:Config
+@test:Config {
+    groups: ["messageStoreListenerConcurrentTests"]
+}
 function testMessageStoreListener2() {
     lock {
         test:assertEquals(users2, [

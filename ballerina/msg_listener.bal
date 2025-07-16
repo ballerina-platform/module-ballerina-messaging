@@ -180,38 +180,38 @@ isolated class PollAndProcessMessages {
     public isolated function ackMessage(string id, boolean success = true) {
         error? result = self.messageStore->acknowledge(id, success);
         if result is error {
-            log:printError("failed to acknowledge message", 'error = result);
+            log:printError("failed to acknowledge message", result);
         }
     }
 
     public isolated function execute() {
         Message|error? message = self.messageStore->retrieve();
         if message is error {
-            log:printError("error occurred while polling for the message", 'error = message);
+            log:printError("error occurred while polling for the message",  message);
             return;
         }
         if message is () {
             return;
         }
 
-        anydata content = message.content;
+        anydata payload = message.payload;
         string id = message.id;
 
-        error? result = trap self.messageStoreService->onMessage(content);
+        error? result = trap self.messageStoreService->onMessage(payload);
         if result is () {
             self.ackMessage(id);
             return;
         }
-        log:printError("error processing message", 'error = result);
+        log:printError("error processing message", result);
 
         if self.config.maxRetries > 0 {
             foreach int attempt in 1 ... self.config.maxRetries {
                 runtime:sleep(self.config.retryInterval);
-                error? retryResult = self.messageStoreService->onMessage(content);
+                error? retryResult = self.messageStoreService->onMessage(payload);
                 if retryResult is error {
-                    log:printError("error processing message on retry", retryAttempt = attempt, 'error = retryResult);
+                    log:printError("error processing message on retry", retryResult, retryAttempt = attempt);
                 } else {
-                    log:printDebug("message processed successfully on retry", retryAttempt = attempt, id = id);
+                    log:printDebug("message processed successfully on retry", retryAttempt = attempt, msgId = id);
                     self.ackMessage(id);
                     return;
                 }
@@ -222,21 +222,21 @@ isolated class PollAndProcessMessages {
             dls = self.deadLetterStore;
         }
         if dls is Store {
-            error? dlsResult = dls->store(content.clone());
+            error? dlsResult = dls->store(payload.clone());
             if dlsResult is error {
-                log:printError("failed to store message in dead letter store", 'error = dlsResult);
+                log:printError("failed to store message in dead letter store", dlsResult);
             } else {
-                log:printDebug("message stored in dead letter store after max retries", payload = message);
+                log:printDebug("message stored in dead letter store after max retries", msgId = id);
                 self.ackMessage(id);
                 return;
             }
         }
 
         if self.config.dropMessageAfterMaxRetries {
-            log:printDebug("max retries reached, dropping message", payload = message);
+            log:printDebug("max retries reached, dropping message", msgId = id);
         }
         else {
-            log:printDebug("max retries reached, message is kept in the store", payload = message);
+            log:printDebug("max retries reached, message is kept in the store", msgId = id);
         }
         self.ackMessage(id, self.config.dropMessageAfterMaxRetries);
     }

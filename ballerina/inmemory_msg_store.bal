@@ -19,7 +19,7 @@ import ballerina/uuid;
 
 type InMemoryMessage record {|
     readonly string id;
-    anydata content;
+    anydata payload;
     boolean inFlight = false;
 |};
 
@@ -36,11 +36,11 @@ public isolated client class InMemoryMessageStore {
 
     # Stores a message in the message store.
     #
-    # + message - The message to be stored
-    isolated remote function store(anydata message) {
+    # + payload - The message payload to be stored
+    isolated remote function store(anydata payload) {
         lock {
             string id = uuid:createType1AsString();
-            self.messages.push({id, content: message.clone()});
+            self.messages.push({id, payload: payload.clone()});
         }
     }
 
@@ -55,7 +55,7 @@ public isolated client class InMemoryMessageStore {
             foreach InMemoryMessage message in self.messages {
                 if !message.inFlight {
                     message.inFlight = true;
-                    return {id: message.id, content: message.content.clone()};
+                    return {id: message.id, payload: message.payload.clone()};
                 }
             }
             return;

@@ -38,21 +38,21 @@ isolated boolean testForError = true;
 
 service on storeListener1 {
 
-    isolated remote function onMessage(anydata message) returns error? {
+    isolated remote function onMessage(anydata payload) returns error? {
         lock {
             if testForError {
                 testForError = false;
                 return error("Simulated processing error");
             }
         }
-        User user = check message.toJson().fromJsonWithType();
+        User user = check payload.toJson().fromJsonWithType();
         lock {
             users1.push(user.clone());
         }
     }
 }
 
-const messages = [
+const messagePayloads = [
     {name: "Alice", age: 30},
     "Dummy message",
     {name: "Bob", age: 25},
@@ -62,12 +62,14 @@ const messages = [
 ];
 
 function addMessagesToStore1() returns error? {
-    foreach anydata message in messages {
-        store1->store(message);
+    foreach anydata payload in messagePayloads {
+        store1->store(payload);
     }
 }
 
-@test:Config
+@test:Config {
+    groups: ["messageStoreListenerTests"]
+}
 function testMessageStoreListener1() {
     lock {
         test:assertEquals(users1, [
@@ -84,17 +86,19 @@ function testMessageStoreListener1() {
             ]);
 }
 
-function testMessagesInDLS(InMemoryMessageStore deadLetterStore, anydata[] expectedMessages) {
-    foreach anydata message in expectedMessages {
+function testMessagesInDLS(InMemoryMessageStore deadLetterStore, anydata[] expectedMessagePayloads) {
+    foreach anydata expectedPayload in expectedMessagePayloads {
         Message? failedMsg = deadLetterStore->retrieve();
         if failedMsg is () {
             test:assertFail("Expected a message in the dead letter store, but found none");
         }
-        test:assertEquals(failedMsg.content, message);
+        test:assertEquals(failedMsg.payload, expectedPayload);
     }
 }
 
-@test:Config
+@test:Config {
+    groups: ["messageStoreListenerTests"]
+}
 function testStoreListenerConfigValidation() {
     StoreListener|error storeListener = new (new InMemoryMessageStore(), pollingInterval = 0);
     if storeListener is StoreListener {
@@ -115,11 +119,13 @@ function testStoreListenerConfigValidation() {
     test:assertEquals(storeListener.message(), "retryInterval must be greater than zero");
 }
 
-@test:Config
+@test:Config {
+    groups: ["messageStoreListenerTests"]
+}
 function testStoreListenerLifeCycleTests() returns error? {
     StoreListener storeListener = check new (new InMemoryMessageStore());
     StoreService svc = service object {
-        isolated remote function onMessage(anydata message) returns error? {
+        isolated remote function onMessage(anydata payload) returns error? {
             // Simulate processing logic
             return;
         }
@@ -147,7 +153,7 @@ function testStoreListenerLifeCycleTests() returns error? {
     }
 
     StoreService differentSvc = service object {
-        isolated remote function onMessage(anydata message) returns error? {
+        isolated remote function onMessage(anydata payload) returns error? {
             // Simulate different processing logic
             return;
         }
@@ -192,7 +198,7 @@ Store customStore = isolated client object {
     final readonly & (string|error)[] data = ["message1", error("This is a mock error"), "message3"];
     private int counter = 0;
 
-    isolated remote function store(anydata message) returns error? {
+    isolated remote function store(anydata payload) returns error? {
         // Not implemented for listener tests
         // Using a inbuilt array to simulate storage
     }
@@ -202,11 +208,11 @@ Store customStore = isolated client object {
             if self.counter >= self.data.length() {
                 return;
             }
-            string|error content = self.data[self.counter];
+            string|error payload = self.data[self.counter];
             self.counter += 1;
-            return content is string ?
-                {id: string `msg${self.counter}`, content} :
-                content;
+            return payload is string ?
+                {id: string `msg${self.counter}`, payload} :
+                payload;
         }
     }
 
@@ -227,14 +233,16 @@ isolated int counter = 0;
 
 service on customStoreListener {
 
-    isolated remote function onMessage(anydata message) returns error? {
+    isolated remote function onMessage(anydata payload) returns error? {
         lock {
             counter += 1;
         }
     }
 }
 
-@test:Config
+@test:Config {
+    groups: ["messageStoreListenerTests"]
+}
 function testListenerNegativeBehaviorWithCustomStore() {
     lock {
         test:assertEquals(counter, 2);
@@ -242,7 +250,7 @@ function testListenerNegativeBehaviorWithCustomStore() {
 }
 
 Store customDeadLetterStore = isolated client object {
-    isolated remote function store(anydata message) returns error? {
+    isolated remote function store(anydata payload) returns error? {
         return error Error("store is not supported in CustomDeadLetterStore");
     }
 
@@ -275,11 +283,11 @@ isolated client class TestStore {
                 return;
             }
             self.isRetrieveCalled = true;
-            return {id: "test", content: "testContent"};
+            return {id: "test", payload: "testContent"};
         }
     }
 
-    isolated remote function store(anydata message) returns error? {
+    isolated remote function store(anydata payload) returns error? {
         // Not needed for this test
     }
 
@@ -313,12 +321,14 @@ listener StoreListener customDeadLetterStoreListenerWithoutDrop = new (
 
 service on customDeadLetterStoreListenerWithDrop, customDeadLetterStoreListenerWithoutDrop {
 
-    isolated remote function onMessage(anydata message) returns error? {
+    isolated remote function onMessage(anydata payload) returns error? {
         return error("Simulated processing error");
     }
 }
 
-@test:Config
+@test:Config {
+    groups: ["messageStoreListenerTests"]
+}
 function testDeadLetterStoreFailure() {
     test:assertEquals(testStore1.getLastAckStatus(), true, "Expected message to be acknowledged after max retries with drop enabled");
     test:assertEquals(testStore2.getLastAckStatus(), false, "Expected message to be acknowledged after max retries without drop enabled");
