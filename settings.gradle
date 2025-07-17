@@ -34,8 +34,10 @@ plugins {
 
 rootProject.name = 'messaging'
 include ':messaging-ballerina'
+include ':checkstyle'
 
 project(':messaging-ballerina').projectDir = file('ballerina')
+project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
 
 gradleEnterprise {
     buildScan {
