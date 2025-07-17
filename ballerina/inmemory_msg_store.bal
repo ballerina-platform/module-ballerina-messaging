@@ -85,7 +85,7 @@ public isolated client class InMemoryMessageStore {
             if success {
                 _ = self.messages.remove(targetIndex);
             } else {
-                log:printDebug("acknowledged with failure, message is kept in the store");
+                log:printDebug("acknowledged with failure, message is kept in the store", msgId = id);
                 message.inFlight = false;
             }
         }

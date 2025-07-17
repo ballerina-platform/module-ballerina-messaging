@@ -180,7 +180,7 @@ isolated class PollAndProcessMessages {
     public isolated function ackMessage(string id, boolean success = true) {
         error? result = self.messageStore->acknowledge(id, success);
         if result is error {
-            log:printError("failed to acknowledge message", result);
+            log:printError("failed to acknowledge message", result, msgId = id);
         }
     }
 
@@ -202,14 +202,14 @@ isolated class PollAndProcessMessages {
             self.ackMessage(id);
             return;
         }
-        log:printError("error processing message", result);
+        log:printError("error occurred while processing message", result, msgId = id);
 
         if self.config.maxRetries > 0 {
             foreach int attempt in 1 ... self.config.maxRetries {
                 runtime:sleep(self.config.retryInterval);
                 error? retryResult = self.messageStoreService->onMessage(payload);
                 if retryResult is error {
-                    log:printError("error processing message on retry", retryResult, retryAttempt = attempt);
+                    log:printError("error processing message on retry", retryResult, retryAttempt = attempt, msgId = id);
                 } else {
                     log:printDebug("message processed successfully on retry", retryAttempt = attempt, msgId = id);
                     self.ackMessage(id);
@@ -224,7 +224,7 @@ isolated class PollAndProcessMessages {
         if dls is Store {
             error? dlsResult = dls->store(payload.clone());
             if dlsResult is error {
-                log:printError("failed to store message in dead letter store", dlsResult);
+                log:printError("failed to store message in dead letter store", dlsResult, msgId = id);
             } else {
                 log:printDebug("message stored in dead letter store after max retries", msgId = id);
                 self.ackMessage(id);
