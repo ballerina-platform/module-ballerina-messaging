@@ -18,8 +18,7 @@ import ballerina/log;
 import ballerina/uuid;
 
 type InMemoryMessage record {|
-    readonly string id;
-    anydata payload;
+    *Message;
     boolean inFlight = false;
 |};
 
@@ -80,6 +79,7 @@ public isolated client class InMemoryMessageStore {
             InMemoryMessage message = targetMessage[0];
             int? targetIndex = self.messages.indexOf(message);
             if targetIndex is () {
+                // This should not happen as we already checked the existence of the message
                 return error("Message with the given ID not found in the store", id = id);
             }
             if success {

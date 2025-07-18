@@ -86,7 +86,7 @@ type StoreListenerConfiguration record {|
     decimal pollingInterval = 1;
     int maxRetries = 3;
     decimal retryInterval = 1;
-    boolean dropMessageAfterMaxRetries = false;
+    boolean ackWithFailureAfterMaxRetries = false;
     Store deadLetterStore?;
 |};
 ```
