@@ -200,7 +200,7 @@ isolated class PollAndProcessMessages {
         anydata payload = message.payload;
         string id = message.id;
 
-        error? result = trap self.messageStoreService->onMessage(payload);
+        error? result = trap self.messageStoreService->onMessage(payload.clone());
         if result is () {
             self.ackMessage(id);
             return;
@@ -210,7 +210,7 @@ isolated class PollAndProcessMessages {
         if self.config.maxRetries > 0 {
             foreach int attempt in 1 ... self.config.maxRetries {
                 runtime:sleep(self.config.retryInterval);
-                error? retryResult = self.messageStoreService->onMessage(payload);
+                error? retryResult = self.messageStoreService->onMessage(payload.clone());
                 if retryResult is error {
                     log:printError("error processing message on retry", retryResult, retryAttempt = attempt, msgId = id);
                 } else {
@@ -225,7 +225,7 @@ isolated class PollAndProcessMessages {
             dls = self.deadLetterStore;
         }
         if dls is Store {
-            error? dlsResult = dls->store(payload.clone());
+            error? dlsResult = dls->store(payload);
             if dlsResult is error {
                 log:printError("failed to store message in dead letter store", dlsResult, msgId = id);
             } else {
