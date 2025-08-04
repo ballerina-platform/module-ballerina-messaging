@@ -1,7 +1,7 @@
 [package]
 org = "ballerina"
 name = "messaging"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Ballerina"]
 keywords = ["message", "store", "processor", "listener", "guaranteed", "delivery"]
 repository = "https://github.com/ballerina-platform/module-ballerina-messaging"
