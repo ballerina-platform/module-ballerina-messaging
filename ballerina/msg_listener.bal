@@ -30,10 +30,11 @@ public type StoreListenerConfiguration record {|
     int maxRetries = 3;
     # The interval in seconds between retries for processing a message
     decimal retryInterval = 1;
-    # If true, the message will be acknowledged with failure after the maximum number of retries is reached
-    boolean ackWithFailureAfterMaxRetries = false;
+    # If true, the message will be acknowledged with failure after the maximum number of retries is reached.
+    # Else the message will be acknowledged with success.
+    boolean ackWithFailureAfterMaxRetries = true;
     # An optional message store to store messages that could not be processed after the maximum 
-    # number of retries. When set, `ackWithFailureAfterMaxRetries` will be ignored
+    # number of retries. On successful storage, the message will be acknowledged with success
     Store deadLetterStore?;
 |};
 
@@ -60,9 +61,6 @@ public isolated class StoreListener {
         }
         if config.retryInterval <= 0d {
             return error Error("retryInterval must be greater than zero");
-        }
-        if config.deadLetterStore !is () && config.ackWithFailureAfterMaxRetries {
-            return error Error("ackWithFailureAfterMaxRetries cannot be true when deadLetterStore is set");
         }
         StoreListenerConfiguration {deadLetterStore, ...otherConfig} = config;
         self.config = {
@@ -237,10 +235,9 @@ isolated class PollAndProcessMessages {
 
         if self.config.ackWithFailureAfterMaxRetries {
             log:printDebug("max retries reached, acknowledging message with failure", msgId = id);
+        } else {
+            log:printDebug("max retries reached, acknowledging message with success", msgId = id);
         }
-        else {
-            log:printDebug("max retries reached, message is kept in the store", msgId = id);
-        }
-        self.ackMessage(id, self.config.ackWithFailureAfterMaxRetries);
+        self.ackMessage(id, !self.config.ackWithFailureAfterMaxRetries);
     }
 }

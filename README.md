@@ -76,9 +76,10 @@ public type StoreListenerConfiguration record {|
     # The interval in seconds between retries for processing a message
     decimal retryInterval = 1;
     # If true, the message will be acknowledged with a failure after the maximum number of retries.
-    boolean ackWithFailureAfterMaxRetries = false;
+    # Else the message will be acknowledged with success
+    boolean ackWithFailureAfterMaxRetries = true;
     # An optional message store to store messages that could not be processed after the maximum 
-    # number of retries. When set, `ackWithFailureAfterMaxRetries` will be ignored
+    # number of retries. On successful storage, the message will be acknowledged with success
     Store deadLetterStore?;
 |};
 ```
