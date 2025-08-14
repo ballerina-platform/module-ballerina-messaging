@@ -307,7 +307,7 @@ listener StoreListener customDeadLetterStoreListenerWithDrop = new (
     maxRetries = 1,
     retryInterval = 2,
     deadLetterStore = customDeadLetterStore,
-    ackWithFailureAfterMaxRetries = true
+    ackWithFailureAfterMaxRetries = false
 );
 
 listener StoreListener customDeadLetterStoreListenerWithoutDrop = new (
@@ -316,7 +316,7 @@ listener StoreListener customDeadLetterStoreListenerWithoutDrop = new (
     maxRetries = 1,
     retryInterval = 2,
     deadLetterStore = customDeadLetterStore,
-    ackWithFailureAfterMaxRetries = false
+    ackWithFailureAfterMaxRetries = true
 );
 
 service on customDeadLetterStoreListenerWithDrop, customDeadLetterStoreListenerWithoutDrop {
