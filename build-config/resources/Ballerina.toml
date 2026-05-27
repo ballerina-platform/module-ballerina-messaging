@@ -6,4 +6,4 @@ authors = ["Ballerina"]
 keywords = ["message", "store", "processor", "listener", "guaranteed", "delivery"]
 repository = "https://github.com/ballerina-platform/module-ballerina-messaging"
 license = ["Apache-2.0"]
-distribution = "2201.12.7"
+distribution = "2201.14.0-20260527-050400-74f7e6bf"
