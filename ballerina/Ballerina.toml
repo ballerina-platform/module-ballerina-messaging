@@ -1,9 +1,9 @@
 [package]
 org = "ballerina"
 name = "messaging"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["Ballerina"]
-keywords = ["message", "store", "processor", "listener", "guaranteed", "delivery"]
+keywords = ["message", "store", "processor", "listener", "guaranteed", "delivery", "Type/Library", "Area/Built-in", "Area/Messaging"]
 repository = "https://github.com/ballerina-platform/module-ballerina-messaging"
 license = ["Apache-2.0"]
 distribution = "2201.12.7"
