@@ -2,7 +2,7 @@
 
 This module provides a message store interface and a message store listener to implement guaranteed message delivery in Ballerina applications, offering a unified API across different message store technologies.
 
-## Key Features
+### Key Features
 
 - Unified API for storing and consuming messages across different message store technologies
 - Store Listener for automatic message consumption and processing
