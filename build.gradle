@@ -28,6 +28,9 @@ allprojects {
     version = project.version
 
     apply plugin: 'jacoco'
+    jacoco {
+        toolVersion = jacocoVersion
+    }
     apply plugin: 'maven-publish'
 
     repositories {
@@ -98,7 +101,7 @@ release {
     }
 }
 
-task build {
+tasks.named('build') {
     dependsOn('messaging-ballerina:build')
 }
 
