@@ -101,7 +101,15 @@ release {
     }
 }
 
-tasks.named('build') {
-    dependsOn('messaging-ballerina:build')
+if (tasks.names.contains('build')) {
+    tasks.named('build') {
+        dependsOn('messaging-ballerina:build')
+
+    }
+} else {
+    tasks.register('build') {
+        dependsOn('messaging-ballerina:build')
+
+    }
 }
 
