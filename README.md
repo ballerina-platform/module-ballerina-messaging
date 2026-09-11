@@ -7,7 +7,9 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerina-messaging.svg)](https://github.com/ballerina-platform/module-ballerina-messaging/commits/main)
 [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/messaging.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Fmessaging)
 
-The Ballerina Messaging module provides a message store interface and a message store listener to implement guaranteed message delivery in Ballerina applications.
+## Overview
+
+This module provides a message store interface and a message store listener to implement guaranteed message delivery in Ballerina applications, offering a unified API across different message store technologies.
 
 ## Message Store Interface
 
@@ -229,7 +231,7 @@ Execute the commands below to build from the source.
 
 ## Contributing to Ballerina
 
-As an open source project, Ballerina welcomes contributions from the community.
+As an open-source project, Ballerina welcomes contributions from the community.
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 

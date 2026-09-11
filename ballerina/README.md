@@ -1,11 +1,12 @@
 ## Overview
 
-Ballerina developers often face challenges when integrating with diverse message brokers or database clients for 
-message persistence and consumption due to their distinct APIs. This package addresses this by offering a unified 
-API for storing and consuming messages, abstracting away the specifics of the underlying message store technology. 
-This fosters consistency in development, allows for flexible switching or simultaneous use of different message stores,
-and enables the consistent implementation of critical messaging patterns like retry mechanisms and dead-letter 
-queues(DLQs).
+This module provides a message store interface and a message store listener to implement guaranteed message delivery in Ballerina applications, offering a unified API across different message store technologies.
+
+### Key Features
+
+- Unified API for storing and consuming messages across different message store technologies
+- Store Listener for automatic message consumption and processing
+- Support for retry mechanisms and dead-letter queues (DLQs)
 
 ### Message Store Interface
 
